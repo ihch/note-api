@@ -4,4 +4,4 @@ WORKDIR /api
 COPY go.mod .
 COPY go.sum .
 RUN go mod download
-COPY src ./
+COPY src ./src
