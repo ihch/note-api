@@ -23,10 +23,9 @@ func main() {
   })
 
   e.GET("/user_test", func(c echo.Context) error {
-    user := User{}
-    user.userId = 1
-    db.First(&user)
-    return c.JSON(http.StatusOK, user)
+    users := []User{}
+    db.Find(&users)
+    return c.JSON(http.StatusOK, users)
   })
   e.Logger.Fatal(e.Start(":1323"))
 }
