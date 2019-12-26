@@ -32,7 +32,7 @@ func main() {
 }
 
 func gormConnect() *gorm.DB {
-	db,err := gorm.Open("mysql", "nemusou:popo@tcp(database:3306)/note")
+	db,err := gorm.Open("mysql", "popo:popo@tcp(database:3306)/note")
 	if err != nil {
     panic(err.Error())
   }
