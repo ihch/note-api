@@ -1,20 +1,23 @@
 package main
 
 import (
+  "database/sql"
   "net/http"
 
   "github.com/labstack/echo"
-  "github.com/jinzhu/gorm"
-  _ "github.com/jinzhu/gorm/dialects/mysql"
+  _ "github.com/go-sql-driver/mysql"
 )
 
 type User struct {
-  userId int `json:userId`
-  userName string `json:userName`
+  UserId int `json:"userId"`
+  UserName string `json:"userName"`
 }
 
 func main() {
-  db := gormConnect()
+  db, err := sql.Open("mysql", "popo:popo@tcp([database]:3306)/note")
+  if err != nil {
+    panic(err)
+  }
   defer db.Close()
 
   e := echo.New()
@@ -23,17 +26,21 @@ func main() {
   })
 
   e.GET("/user_test", func(c echo.Context) error {
+    rows, err := db.Query("SELECT * FROM users")
+    if err != nil {
+      panic(err)
+    }
     users := []User{}
-    db.Find(&users)
+    for rows.Next() {
+      var user User
+      err := rows.Scan(&user.UserId, &user.UserName)
+      if err != nil {
+        panic(err)
+      }
+
+      users = append(users, user)
+    }
     return c.JSON(http.StatusOK, users)
   })
   e.Logger.Fatal(e.Start(":1323"))
-}
-
-func gormConnect() *gorm.DB {
-	db,err := gorm.Open("mysql", "popo:popo@tcp(database:3306)/note")
-	if err != nil {
-    panic(err.Error())
-  }
-  return db
 }
