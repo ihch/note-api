@@ -1,46 +1,46 @@
 package main
 
 import (
-  "database/sql"
-  "net/http"
+	"database/sql"
+	"net/http"
 
-  "github.com/labstack/echo"
-  _ "github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/labstack/echo"
 )
 
 type User struct {
-  UserId int `json:"userId"`
-  UserName string `json:"userName"`
+	UserId   int    `json:"userId"`
+	UserName string `json:"userName"`
 }
 
 func main() {
-  db, err := sql.Open("mysql", "popo:popo@tcp([database]:3306)/note")
-  if err != nil {
-    panic(err)
-  }
-  defer db.Close()
+	db, err := sql.Open("mysql", "popo:popo@tcp([database]:3306)/note")
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
 
-  e := echo.New()
-  e.GET("/", func(c echo.Context) error {
-    return c.String(http.StatusOK, "Hello, World!")
-  })
+	e := echo.New()
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello, World!")
+	})
 
-  e.GET("/user_test", func(c echo.Context) error {
-    rows, err := db.Query("SELECT * FROM users")
-    if err != nil {
-      panic(err)
-    }
-    users := []User{}
-    for rows.Next() {
-      var user User
-      err := rows.Scan(&user.UserId, &user.UserName)
-      if err != nil {
-        panic(err)
-      }
+	e.GET("/user_test", func(c echo.Context) error {
+		rows, err := db.Query("SELECT * FROM users")
+		if err != nil {
+			panic(err)
+		}
+		users := []User{}
+		for rows.Next() {
+			var user User
+			err := rows.Scan(&user.UserId, &user.UserName)
+			if err != nil {
+				panic(err)
+			}
 
-      users = append(users, user)
-    }
-    return c.JSON(http.StatusOK, users)
-  })
-  e.Logger.Fatal(e.Start(":1323"))
+			users = append(users, user)
+		}
+		return c.JSON(http.StatusOK, users)
+	})
+	e.Logger.Fatal(e.Start(":1323"))
 }
