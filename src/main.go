@@ -13,12 +13,26 @@ type User struct {
 	UserName string `json:"userName"`
 }
 
-func main() {
-	db, err := sql.Open("mysql", "popo:popo@tcp([database]:3306)/note")
+type SqlHandler struct {
+	Conn *sql.DB
+}
+
+func NewSqlHandler() *SqlHandler {
+	conn, err := sql.Open("mysql", "popo:popo@tcp([database]:3306)/note")
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
+	sqlHandler := new(SqlHandler)
+	sqlHandler.Conn = conn
+	return sqlHandler
+}
+
+func (sqlHandler *SqlHandler) Query(query string, args ...interface{}) (*sql.Rows, error) {
+	return sqlHandler.Conn.Query(query, args...)
+}
+
+func main() {
+	sqlHandler := NewSqlHandler()
 
 	e := echo.New()
 	e.GET("/", func(c echo.Context) error {
@@ -26,7 +40,7 @@ func main() {
 	})
 
 	e.GET("/user_test", func(c echo.Context) error {
-		rows, err := db.Query("SELECT * FROM users")
+		rows, err := sqlHandler.Query("SELECT * FROM users")
 		if err != nil {
 			panic(err)
 		}
