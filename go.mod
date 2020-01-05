@@ -1,4 +1,4 @@
-module github.com/nemusou/note
+module github.com/nemusou/note-api
 
 go 1.13
 
