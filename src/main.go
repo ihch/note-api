@@ -7,7 +7,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo"
 
-  "github.com/nemusou/note-api/src/config"
+	"github.com/nemusou/note-api/src/config"
 )
 
 type User struct {
@@ -24,8 +24,8 @@ type UserRepository struct {
 }
 
 func NewSqlHandler(dbconfig *config.DBConfig) *SqlHandler {
-	// conn, err := sql.Open("mysql", "popo:popo@tcp([database]:3306)/note")
-	conn, err := sql.Open("mysql", dbconfig.User + ":" + dbconfig.Password + "@tcp([database]:3306)/" + dbconfig.Database)
+  dburl := dbconfig.User+":"+dbconfig.Password+"@tcp([database]:3306)/"+dbconfig.Database
+	conn, err := sql.Open("mysql", dburl)
 	if err != nil {
 		panic(err)
 	}
@@ -63,7 +63,8 @@ func (sqlHandler *SqlHandler) Query(query string, args ...interface{}) (*sql.Row
 }
 
 func main() {
-	sqlHandler := NewSqlHandler()
+	dbconfig := config.NewDBConfig()
+	sqlHandler := NewSqlHandler(dbconfig)
 	userRepository := NewUserRepository(sqlHandler)
 
 	e := echo.New()
