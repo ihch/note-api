@@ -24,7 +24,7 @@ type UserRepository struct {
 }
 
 func NewSqlHandler(dbconfig *config.DBConfig) *SqlHandler {
-  dburl := dbconfig.User+":"+dbconfig.Password+"@tcp([database]:3306)/"+dbconfig.Database
+	dburl := dbconfig.User + ":" + dbconfig.Password + "@tcp([database]:3306)/" + dbconfig.Database
 	conn, err := sql.Open("mysql", dburl)
 	if err != nil {
 		panic(err)
