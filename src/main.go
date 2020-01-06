@@ -63,11 +63,16 @@ func (sqlHandler *SqlHandler) Query(query string, args ...interface{}) (*sql.Row
 }
 
 func main() {
+	e := echo.New()
+	setRoute(e)
+	e.Logger.Fatal(e.Start(":1323"))
+}
+
+func setRoute(e *echo.Echo) {
 	dbconfig := config.NewDBConfig()
 	sqlHandler := NewSqlHandler(dbconfig)
 	userRepository := NewUserRepository(sqlHandler)
 
-	e := echo.New()
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
@@ -76,5 +81,4 @@ func main() {
 		users := userRepository.Users()
 		return c.JSON(http.StatusOK, users)
 	})
-	e.Logger.Fatal(e.Start(":1323"))
 }
