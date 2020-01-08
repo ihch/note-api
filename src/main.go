@@ -1,13 +1,12 @@
 package main
 
 import (
-	"database/sql"
 	"net/http"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo"
 
 	"github.com/nemusou/note-api/src/config"
+	. "github.com/nemusou/note-api/src/infra/sql/mysql"
 )
 
 type User struct {
@@ -15,23 +14,8 @@ type User struct {
 	UserName string `json:"userName"`
 }
 
-type SqlHandler struct {
-	Conn *sql.DB
-}
-
 type UserRepository struct {
 	sqlHandler *SqlHandler
-}
-
-func NewSqlHandler(dbconfig *config.DBConfig) *SqlHandler {
-	dburl := dbconfig.User + ":" + dbconfig.Password + "@tcp([database]:3306)/" + dbconfig.Database
-	conn, err := sql.Open("mysql", dburl)
-	if err != nil {
-		panic(err)
-	}
-	sqlHandler := new(SqlHandler)
-	sqlHandler.Conn = conn
-	return sqlHandler
 }
 
 func NewUserRepository(sqlHandler *SqlHandler) *UserRepository {
@@ -56,10 +40,6 @@ func (userRepository *UserRepository) Users() []User {
 		users = append(users, user)
 	}
 	return users
-}
-
-func (sqlHandler *SqlHandler) Query(query string, args ...interface{}) (*sql.Rows, error) {
-	return sqlHandler.Conn.Query(query, args...)
 }
 
 func main() {
